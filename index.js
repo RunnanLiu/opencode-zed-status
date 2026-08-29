@@ -1,15 +1,10 @@
-import { ZedBell } from "./zed-bell.js";
-import { ZedTitle } from "./zed-title.js";
+import { bellTui } from "./zed-bell.js";
+import { titleTui } from "./zed-title.js";
 
 export default {
-  server: async () => {
-    const bell = await ZedBell();
-    const title = await ZedTitle();
-    return {
-      event: async (e) => {
-        await bell.event(e);
-        await title.event(e);
-      },
-    };
+  id: "opencode-zed-status",
+  tui: async (api) => {
+    await bellTui(api);
+    await titleTui(api);
   },
 };

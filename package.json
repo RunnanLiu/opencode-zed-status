@@ -1,11 +1,10 @@
 {
   "name": "opencode-zed-status",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "Zed terminal status plugins for opencode: bell + animated title",
   "type": "module",
-  "main": "./index.js",
   "exports": {
-    "./server": "./index.js"
+    "./tui": "./index.js"
   },
   "files": [
     "index.js",
