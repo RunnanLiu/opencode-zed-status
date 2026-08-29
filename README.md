@@ -11,23 +11,37 @@
 
 ## 安装
 
-### Windows(PowerShell)
+### 方式一:npm(推荐)
+
+```sh
+opencode plugin add opencode-zed-status
+```
+
+或在 `opencode.json` 的 `plugin` 数组中加入包名后重启:
+
+```json
+{
+  "plugin": ["opencode-zed-status"]
+}
+```
+
+### 方式二:install 脚本
+
+下载两个文件到 `~/.config/opencode/plugins/`:
+
+Windows(PowerShell):
 
 ```powershell
 irm https://raw.githubusercontent.com/RunnanLiu/opencode-zed-status/main/install.ps1 | iex
 ```
 
-### macOS / Linux
+macOS / Linux:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/RunnanLiu/opencode-zed-status/main/install.sh | sh
 ```
 
-脚本会把两个插件下载到 `~/.config/opencode/plugins/`。**重启 opencode 后生效。**
-
-### 手动安装
-
-将 `zed-bell.js` 与 `zed-title.js` 放入 `~/.config/opencode/plugins/`,重启 opencode。
+**任一方式完成后重启 opencode 生效。**
 
 ## 使用
 
@@ -38,8 +52,7 @@ curl -fsSL https://raw.githubusercontent.com/RunnanLiu/opencode-zed-status/main/
 
 ## 卸载
 
-删除 `~/.config/opencode/plugins/zed-bell.js` 与 `zed-title.js`,重启 opencode。
+- npm 方式:`opencode plugin remove opencode-zed-status` 并重启
+- 脚本方式:删除 `~/.config/opencode/plugins/zed-bell.js` 与 `zed-title.js`,重启 opencode
 
-## License
-
-MIT © 2026 RunnanLiu
+注意:两种方式不要混用,否则插件会加载两份(双动画/双响铃)。
