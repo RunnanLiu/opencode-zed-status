@@ -45,6 +45,8 @@ opencode plugin add opencode-zed-status
 
 在 Zed 的 Terminal Threads 中正常使用 opencode 即可,无需额外配置:
 
+![Demo](docs/demo.gif)
+
 - 静态图标:空闲时标题为 `▣ OC | 标题`,Zed 的 Threads Sidebar 会在图标位显示 `▣`(与 opencode 官方 mark 同构)
 - 忙碌动画:busy / retry 时左侧轮换四象限块(`▘ ▝ ▗ ▖`,200ms/帧),Zed 图标位同步显示旋转帧
 - 自动恢复:标题采用轮询写入,任何时刻被其他来源覆盖(切换会话、`/new`、复制文本等),≤1s 内自动恢复 `▣` 前缀

@@ -45,6 +45,8 @@ Download `zed-bell.js` / `zed-title.js` to any directory, then declare them by p
 
 Just use opencode normally in a Zed Terminal Thread — no extra configuration:
 
+![Demo](docs/demo.gif)
+
 - Static icon: when idle the title is `▣ OC | <title>`; Zed's Threads Sidebar shows `▣` in the icon slot (mirrors the opencode official mark)
 - Busy animation: while busy / retrying, the quadrant blocks rotate (`▘ ▝ ▗ ▖`, 200ms/frame) on the left; the sidebar icon spins in sync
 - Auto-recovery: the title is written by a polling loop; if anything else overwrites it (session switch, `/new`, copying text, etc.), the `▣` prefix is restored within ≤1s
