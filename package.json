@@ -1,0 +1,27 @@
+{
+  "name": "opencode-zed-status",
+  "version": "1.0.0",
+  "description": "Zed terminal status plugins for opencode: bell + animated title",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    "./server": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "zed-bell.js",
+    "zed-title.js",
+    "README.md"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RunnanLiu/opencode-zed-status.git"
+  },
+  "keywords": [
+    "opencode",
+    "plugin",
+    "zed",
+    "terminal"
+  ]
+}
