@@ -4,7 +4,14 @@ const bellTui = async (api) => {
       process.stdout.write("\x07");
     } catch {}
   };
-  api.event.on("session.idle", bell);
+  api.event.on("session.idle", (e) => {
+    try {
+      const sessionID = e?.properties?.sessionID ?? e?.sessionID;
+      const session = sessionID ? api.state.session.get(sessionID) : undefined;
+      if (session?.parentID) return;
+    } catch {}
+    bell();
+  });
   api.event.on("permission.asked", bell);
   api.event.on("question.asked", bell);
 };
