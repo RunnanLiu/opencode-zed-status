@@ -1,15 +1,18 @@
 {
   "name": "opencode-zed-status",
-  "version": "1.1.3",
-  "description": "Zed terminal status plugins for opencode: bell + animated title",
+  "version": "2.0.0",
+  "description": "Zed terminal status plugin for OpenCode V2: bell + animated title",
   "type": "module",
+  "scripts": {
+    "test": "node test.mjs"
+  },
   "exports": {
-    "./tui": "./index.js"
+    "./tui": "./tui.js"
   },
   "files": [
-    "index.js",
-    "zed-bell.js",
-    "zed-title.js",
+    "tui.js",
+    "title.js",
+    "bell.js",
     "README.md",
     "README.zh-CN.md"
   ],

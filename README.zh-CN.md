@@ -2,14 +2,12 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-为 [opencode](https://opencode.ai) 提供 Zed 终端状态反馈的 TUI 插件(零依赖、单文件):
+OpenCode **V2** CLI 插件,为 Zed 终端提供状态反馈(零依赖、零构建):
 
-| 文件 | 导出 | 作用 |
-|---|---|---|
-| `zed-bell.js` | `bellTui` | 任务完成 / 等待授权时向终端写 BEL(`\x07`),Zed 未聚焦时弹通知 + 蓝点 |
-| `zed-title.js` | `titleTui` | 终端标题(OSC 0):空闲显示静态图标 `▣`,busy / retry 时轮换 spinner 帧覆盖 |
+- **标题**(OSC 0):空闲显示静态 `▣` 图标,任务运行中显示四象限 spinner(`▘▝▗▖`,200ms/帧)。Zed 的 Threads 侧栏图标位会同步显示并旋转 `▣`。
+- **响铃**:顶层任务完成、或需要权限/表单输入时向终端写入 BEL(`\x07`);终端未聚焦时 Zed 弹出通知 + 蓝点。
 
-两者互不冲突(BEL vs OSC 0),可同时使用。
+> 需要 OpenCode **v2**(V2 CLI 插件 API)。OpenCode v1 请使用 `opencode-zed-status@1.1.3`,v2 不兼容 V1 插件 API。
 
 ## 安装
 
@@ -19,49 +17,52 @@
 opencode plugin add opencode-zed-status
 ```
 
-或手动在 `~/.config/opencode/tui.json` 的 `plugin` 数组中加入包名后重启:
+或在 `~/.config/opencode/cli.json` 的 `plugins` 中加入包名:
 
 ```json
 {
-  "plugin": ["opencode-zed-status"]
+  "plugins": ["opencode-zed-status"],
+  "terminal": { "title": false }
 }
 ```
 
-> 注意:TUI 插件的配置在 `tui.json`,不是 `opencode.json`;`opencode plugin add` 在部分版本有 bug(只打印 help),此时请直接编辑 `tui.json`。
+- `terminal.title: false`(等价于在命令面板执行一次 **Disable terminal title**)会关闭 opencode 内置标题写入器,让本插件成为**唯一标题所有者**。不关闭的话两者会竞争写入,内置更新后 `▣` 前缀可能短暂丢失(插件 ≤1s 自愈,但没必要打架)。
+- 安装后重启 opencode;TUI 运行中保存 `cli.json` 会热重载。
 
-### 方式二:本地文件
+### 方式二:本地目录
 
-下载 `zed-bell.js` / `zed-title.js` 到任意目录,然后在 `tui.json` 中按路径声明(TUI 插件**没有**目录自动发现):
+克隆或下载本仓库,然后在 `cli.json` 中指向目录(仓库即可直接使用,加载器解析物理 `tui.js`):
 
 ```json
 {
-  "plugin": ["D:/path/to/zed-bell.js", "D:/path/to/zed-title.js"]
+  "plugins": ["file:///D:/Artifact/OC-Zed-Status"]
 }
 ```
 
-**任一方式完成后重启 opencode 生效。**
+## 行为
 
-## 使用
+- 空闲标题:`▣ <会话标题>`;默认/未命名会话显示 `▣ OpenCode`
+- 运行中:左侧四象限 spinner `▘ ▝ ▗ ▖`,200ms/帧——启停**即时**(状态迁移由事件驱动)
+- 自愈:标题每秒至少重写一次,任何覆盖(复制文本、其他工具、忘记关闭的内置写入器)都会在 ≤1s 内被修复;200ms 轮询仅作为下限,覆盖路由探测、帧动画与自愈
+- 响铃:**仅顶层会话**完成(`succeeded`/`interrupted`/`failed`)时响;`permission` / 表单提示**全层级**响;**子 agent 完成不响**
+- 标题截断至 40 字符(省略号 `…`);`▣` 图标本身即在 Zed 侧栏标识 OpenCode 会话
 
-在 Zed 的 Terminal Threads 中正常使用 opencode 即可,无需额外配置:
+### 与 opencode 内置 attention 的关系
 
-![Demo](docs/demo.gif)
+OpenCode v2 原生提供系统通知与提示音(`cli.json` 的 `attention` 设置及内置插件 `opencode.notifications`)。本插件**不重复**这些能力——只补充 BEL 通道(让 Zed 蓝点生效的协议通道)。需要系统通知/提示音的话,保持 `attention.notifications` / `attention.sound` 开启即可。
 
-- 静态图标:空闲时标题为 `▣ OC | 标题`,Zed 的 Threads Sidebar 会在图标位显示 `▣`(与 opencode 官方 mark 同构)
-- 忙碌动画:busy / retry 时左侧轮换四象限块(`▘ ▝ ▗ ▖`,200ms/帧),Zed 图标位同步显示旋转帧
-- 自动恢复:标题采用轮询写入,任何时刻被其他来源覆盖(切换会话、`/new`、复制文本等),≤1s 内自动恢复 `▣` 前缀
-- 响铃:任务完成或等待授权时终端响铃,未聚焦时 Zed 弹通知
-- 标题截断 40 字符,保留 `OC |` 前缀
-- 静态图标固定为 `▣`(与 opencode 官方 mark 同构),不可切换
+## 关闭或卸载
 
-### 禁用
+二者是同一个动作:从 `cli.json` 的 `plugins` 中移除条目(npm 安装也可用 `opencode plugin remove opencode-zed-status`)。如需内置标题,恢复 `terminal.title`。本插件不设独立开关。
 
-- 环境变量 `OPENCODE_DISABLE_TERMINAL_TITLE=1` 禁用标题功能
-- TUI 设置中的 "Disable terminal title" 开关同样生效(`terminal_title_enabled`)
+## 文件
 
-## 卸载
+| 文件 | 职责 |
+|---|---|
+| `tui.js` | 插件入口(`{ id, setup }`,即 V2 `./tui` 契约);组合两个模块并聚合清理函数 |
+| `title.js` | 终端标题:双调度器——状态迁移由事件触发即时重算;轮询作为下限(路由、帧动画、自愈) |
+| `bell.js` | BEL 响铃;事件集镜像内置 `opencode.notifications`(含去重) |
 
-- npm 方式:从 `tui.json` 移除 `opencode-zed-status` 并重启
-- 本地方式:从 `tui.json` 移除对应文件路径并重启
+## 开发
 
-注意:两种方式不要混用,否则插件会加载两份(双动画/双响铃)。
+`npm test` 运行零依赖的 mock 契约测试(`test.mjs`):模拟 OpenCode V2 插件宿主,断言完整行为矩阵——包括针对 v2.0.21 宿主源码验证过的事件名与负载结构,因此也是对抗未来 opencode 版本漂移的哨兵。需要 Node 18+,无需安装依赖。
